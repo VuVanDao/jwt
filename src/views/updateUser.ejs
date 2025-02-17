@@ -19,10 +19,16 @@
   <body>
     <h1>hello</h1>
     <div class="container">
-      <form class="row" method="post" action="/add">
+      <form class="row" method="post" action="/update/<%=result.id%>">
         <div class="mb-3 col-6">
           <label for="email" class="form-label">Email </label>
-          <input type="email" class="form-control" id="email" name="email" />
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            value="<%=result.email%>"
+          />
         </div>
         <div class="mb-3 col-6">
           <label for="password" class="form-label">Password</label>
@@ -31,6 +37,7 @@
             class="form-control"
             id="password"
             name="password"
+            disabled
           />
         </div>
         <div class="mb-3 col-6">
@@ -40,44 +47,11 @@
             class="form-control"
             id="username"
             name="username"
+            value="<%=result.username%>"
           />
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
-    </div>
-
-    <div class="container mt-5">
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">email</th>
-            <th scope="col">username</th>
-            <th scope="col">Handle</th>
-          </tr>
-        </thead>
-        <tbody>
-          <%result.forEach(({email,username,id})=>{%>
-          <tr>
-            <td><%=id%></td>
-            <td><%=email%></td>
-            <td><%=username%></td>
-            <td style="display: flex; gap: 10px">
-              <a href="/get-detail/<%=id%>">
-                <button type="button" class="btn btn-outline-primary">
-                  update
-                </button>
-              </a>
-              <a href="/delete/<%=id%>">
-                <button type="button" class="btn btn-outline-danger">
-                  delete
-                </button>
-              </a>
-            </td>
-          </tr>
-          <%})%>
-        </tbody>
-      </table>
     </div>
   </body>
 </html>
