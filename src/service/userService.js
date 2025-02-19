@@ -1,3 +1,5 @@
+import { where } from "sequelize";
+
 const { User, Group } = require("../models");
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
@@ -56,4 +58,50 @@ const deleteUser = async (id) => {
   });
   user.destroy();
 };
-export { AddUser, GetAllUser, getDetailUser, UpdateUser, deleteUser };
+const CreateUser = async (email, address, phone, username, password) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let checkUserExist = await User.findOne({
+        where: {
+          email: email,
+        },
+      });
+      if (!checkUserExist) {
+        let hashPassword = bcrypt.hashSync(password, salt);
+        let user = await User.create({
+          username: username,
+          email: email,
+          password: hashPassword,
+          address: address,
+          phone: phone,
+        });
+        if (user) {
+          resolve({
+            errCode: 0,
+            errMessage: "Create user complete",
+          });
+        } else {
+          resolve({
+            errCode: 1,
+            errMessage: "Create user is not complete",
+          });
+        }
+      } else {
+        resolve({
+          errCode: 2,
+          errMessage: " user already exist",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+export {
+  AddUser,
+  GetAllUser,
+  getDetailUser,
+  UpdateUser,
+  deleteUser,
+  CreateUser,
+};

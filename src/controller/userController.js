@@ -4,6 +4,7 @@ import {
   getDetailUser,
   UpdateUser,
   deleteUser,
+  CreateUser,
 } from "../service/userService";
 import { GroupRole, Group, Role } from "../models";
 import { raw } from "body-parser";
@@ -82,10 +83,26 @@ const handleDeleteUser = async (req, res) => {
   await deleteUser(req.params.id);
   res.redirect("/");
 };
+const handleCreateUser = async (req, res) => {
+  try {
+    let { email, Address, username, password, phoneNumber } = req.body;
+    let result = await CreateUser(
+      email,
+      Address,
+      phoneNumber,
+      username,
+      password
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ errMessage: "Error from create user", error });
+  }
+};
 export {
   handleAddUser,
   handleGetHomePage,
   handleGetDetailUser,
   handleUpdateUser,
   handleDeleteUser,
+  handleCreateUser,
 };

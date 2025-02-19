@@ -5,7 +5,8 @@
     "database": "jwt",
     "host": "127.0.0.1",
     "dialect": "mysql",
-    "raw": true
+    "raw": true,
+    "logging": false
   },
   "test": {
     "username": "root",
