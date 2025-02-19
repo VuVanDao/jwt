@@ -63,10 +63,8 @@ const handleGetHomePage = async (req, res) => {
   }
 };
 const handleAddUser = async (req, res) => {
-  let username = req.body.username;
-  let email = req.body.email;
-  let password = req.body.password;
-  await AddUser(username, email, password);
+  let { email, address, username, password, phone } = req.body;
+  await AddUser(email, address, phone, username, password);
   res.redirect("/");
 };
 const handleGetDetailUser = async (req, res) => {

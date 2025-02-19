@@ -16,12 +16,14 @@ const GetAllUser = async () => {
   });
   return result;
 };
-const AddUser = async (username, email, password) => {
+const AddUser = async (email, address, phone, username, password) => {
   let hashPassword = bcrypt.hashSync(password, salt);
   await User.create({
     username: username,
     email: email,
     password: hashPassword,
+    address: address,
+    phone: phone,
   });
 };
 const getDetailUser = async (id) => {
