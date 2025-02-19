@@ -9,7 +9,7 @@ import { GroupRole, Group, Role } from "../models";
 import { raw } from "body-parser";
 const handleGetHomePage = async (req, res) => {
   let result = await GetAllUser();
-  console.log(">>", result);
+  // console.log(">>", result);
   // let result2 = await GroupRole.findOne({
   //   include: [
   //     {
@@ -27,34 +27,34 @@ const handleGetHomePage = async (req, res) => {
   //   ],
   //   raw: true,
   // });
-  let result2 = await Group.findAll({
-    include: {
-      model: Role,
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
-    },
-    attributes: {
-      exclude: ["createdAt", "updatedAt"],
-    },
-    raw: true,
-    nest: true,
-  });
-  console.log("group", result2);
-  let result3 = await Role.findAll({
-    include: {
-      model: Group,
-      attributes: {
-        exclude: ["createdAt", "updatedAt"],
-      },
-    },
-    attributes: {
-      exclude: ["createdAt", "updatedAt"],
-    },
-    raw: true,
-    nest: true,
-  });
-  console.log("role", result3);
+  // let result2 = await Group.findAll({
+  //   include: {
+  //     model: Role,
+  //     attributes: {
+  //       exclude: ["createdAt", "updatedAt"],
+  //     },
+  //   },
+  //   attributes: {
+  //     exclude: ["createdAt", "updatedAt"],
+  //   },
+  //   raw: true,
+  //   nest: true,
+  // });
+  // console.log("group", result2);
+  // let result3 = await Role.findAll({
+  //   include: {
+  //     model: Group,
+  //     attributes: {
+  //       exclude: ["createdAt", "updatedAt"],
+  //     },
+  //   },
+  //   attributes: {
+  //     exclude: ["createdAt", "updatedAt"],
+  //   },
+  //   raw: true,
+  //   nest: true,
+  // });
+  // console.log("role", result3);
   if (result && result.length > 0) {
     res.render("user.ejs", { result });
   } else {
