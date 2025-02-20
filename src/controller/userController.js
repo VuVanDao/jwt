@@ -5,9 +5,9 @@ import {
   UpdateUser,
   deleteUser,
   CreateUser,
+  Login,
 } from "../service/userService";
 import { GroupRole, Group, Role } from "../models";
-import { raw } from "body-parser";
 const handleGetHomePage = async (req, res) => {
   let result = await GetAllUser();
   // console.log(">>", result);
@@ -98,6 +98,16 @@ const handleCreateUser = async (req, res) => {
     res.status(500).json({ errMessage: "Error from create user", error });
   }
 };
+const handleLogin = async (req, res) => {
+  try {
+    let { email, password } = req.body;
+    let result = await Login(email, password);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from login account", error);
+    res.status(500).json({ errMessage: "Error from login account" });
+  }
+};
 export {
   handleAddUser,
   handleGetHomePage,
@@ -105,4 +115,5 @@ export {
   handleUpdateUser,
   handleDeleteUser,
   handleCreateUser,
+  handleLogin,
 };

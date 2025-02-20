@@ -61,11 +61,7 @@ const deleteUser = async (id) => {
 const CreateUser = async (email, address, phone, username, password) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let checkUserExist = await User.findOne({
-        where: {
-          email: email,
-        },
-      });
+      let checkUserExist = await checkEmailExist(email);
       if (!checkUserExist) {
         let hashPassword = bcrypt.hashSync(password, salt);
         let user = await User.create({
@@ -97,6 +93,76 @@ const CreateUser = async (email, address, phone, username, password) => {
     }
   });
 };
+const checkEmailExist = async (email) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let checkUserExist = await User.findOne({
+        where: {
+          email: email,
+        },
+      });
+      if (checkUserExist) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const checkPassword = async (email, password) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let checkUserExist = await User.findOne({
+        where: {
+          email: email,
+        },
+      });
+      if (checkUserExist && checkUserExist.get({ plain: true }).password) {
+        const hashPassword = checkUserExist.get({ plain: true }).password;
+        const checkPasswordResult = bcrypt.compareSync(password, hashPassword);
+        if (checkPasswordResult) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      } else {
+        resolve(false);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const Login = async (email, password) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let checkUserExist = await checkEmailExist(email);
+      let checkComparePassword = await checkPassword(email, password);
+      if (checkUserExist && checkComparePassword) {
+        resolve({
+          errCode: 0,
+          errMessage: "Login successfully",
+        });
+      } else {
+        if (!checkUserExist) {
+          resolve({
+            errCode: -1,
+            errMessage: "Email is not correct",
+          });
+        } else {
+          resolve({
+            errCode: -1,
+            errMessage: "Password is not correct",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 export {
   AddUser,
   GetAllUser,
@@ -104,4 +170,5 @@ export {
   UpdateUser,
   deleteUser,
   CreateUser,
+  Login,
 };
