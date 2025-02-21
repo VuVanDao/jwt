@@ -6,6 +6,11 @@ import {
   deleteUser,
   CreateUser,
   Login,
+  GetAllUserApi,
+  GetAllUserApiWithPaginate,
+  CreateUserApi,
+  GetDeleteUserApi,
+  GetUpdateUserApi,
 } from "../service/userService";
 import { GroupRole, Group, Role } from "../models";
 const handleGetHomePage = async (req, res) => {
@@ -108,6 +113,56 @@ const handleLogin = async (req, res) => {
     res.status(500).json({ errMessage: "Error from login account" });
   }
 };
+const handleGetAllUserApi = async (req, res) => {
+  try {
+    if (req.query.limit && req.query.page) {
+      let result = await GetAllUserApiWithPaginate(
+        +req.query.page,
+        +req.query.limit
+      );
+      res.status(200).json(result);
+    } else {
+      let result = await GetAllUserApi();
+      res.status(200).json(result);
+    }
+  } catch (error) {
+    console.log("Error from handleGetAllUser", error);
+    res.status(500).json({ errMessage: "Error from handleGetAllUser" });
+  }
+};
+const handleCreateUserApi = async (req, res) => {
+  try {
+    let { email, address, username, password, phone } = req.body;
+    let result = await CreateUserApi(email, address, username, password, phone);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from handleCreateUser", error);
+    res.status(500).json({ errMessage: "Error from handleCreateUser" });
+  }
+};
+const handleUpdateUserApi = async (req, res) => {
+  try {
+    let id = req.body.id;
+    let username = req.body.username;
+    let email = req.body.email;
+    let phone = req.body.phone;
+    let address = req.body.address;
+    let result = await GetUpdateUserApi(id, email, address, username, phone);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from handleGetUpdateUser", error);
+    res.status(500).json({ errMessage: "Error from handleGetUpdateUser" });
+  }
+};
+const handleDeleteUserApi = async (req, res) => {
+  try {
+    let result = await GetDeleteUserApi(req.params.id);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from handleGetDeleteUser", error);
+    res.status(500).json({ errMessage: "Error from handleGetDeleteUser" });
+  }
+};
 export {
   handleAddUser,
   handleGetHomePage,
@@ -116,4 +171,8 @@ export {
   handleDeleteUser,
   handleCreateUser,
   handleLogin,
+  handleGetAllUserApi,
+  handleCreateUserApi,
+  handleUpdateUserApi,
+  handleDeleteUserApi,
 };

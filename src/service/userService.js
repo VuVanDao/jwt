@@ -163,6 +163,166 @@ const Login = async (email, password) => {
     }
   });
 };
+const GetAllUserApi = async () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result = [];
+      result = await User.findAll({
+        include: {
+          model: Group,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
+        raw: true,
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "password"],
+        },
+      });
+      if (result && result.length > 0) {
+        resolve({
+          errCode: 0,
+          errMessage: "Get all user complete",
+          data: result,
+        });
+      } else {
+        resolve({
+          errCode: -1,
+          errMessage: "Get all user not complete",
+          data: result,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const GetAllUserApiWithPaginate = async (page, limit) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let offset = (page - 1) * limit;
+      let { count, rows } = await User.findAndCountAll({
+        offset: offset,
+        limit: limit,
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "password"],
+        },
+      });
+      let result = {
+        totalRows: count,
+        totalPage: Math.ceil(count / limit),
+        users: rows,
+      };
+      resolve({
+        errCode: 0,
+        errMessage: "Get all user complete",
+        data: result,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const CreateUserApi = async (email, address, username, password, phone) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!email || !password || !username) {
+        resolve({
+          errCode: -1,
+          errMessage: "Missing data required",
+        });
+      } else {
+        let hashPassword = bcrypt.hashSync(password, salt);
+        let userCreated = await User.create({
+          username: username,
+          email: email,
+          password: hashPassword,
+          address: address,
+          phone: phone,
+        });
+        if (userCreated) {
+          resolve({
+            errCode: 0,
+            errMessage: "Create user complete",
+          });
+        } else {
+          resolve({
+            errCode: 1,
+            errMessage: "Create user not complete",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const GetUpdateUserApi = async (id, email, address, username, phone) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id || !email || !username) {
+        resolve({
+          errCode: -1,
+          errMessage: "Missing params required",
+        });
+      } else {
+        let userUpdate = await User.findOne({
+          where: {
+            id: id,
+          },
+        });
+        if (!userUpdate) {
+          resolve({
+            errCode: 1,
+            errMessage: "Not found any user",
+          });
+        } else {
+          userUpdate.email = email;
+          userUpdate.address = address;
+          userUpdate.username = username;
+          userUpdate.phone = phone;
+          userUpdate.save();
+          resolve({
+            errCode: 0,
+            errMessage: "Update user complete",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const GetDeleteUserApi = async (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id) {
+        resolve({
+          errCode: -1,
+          errMessage: "Missing id to find and delete",
+        });
+      } else {
+        let userDelete = await User.findOne({
+          where: { id: id },
+        });
+        if (!userDelete) {
+          resolve({
+            errCode: 1,
+            errMessage: "Not found any user",
+          });
+        } else {
+          userDelete.destroy();
+          resolve({
+            errCode: 0,
+            errMessage: "Delete user complete",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 export {
   AddUser,
   GetAllUser,
@@ -171,4 +331,9 @@ export {
   deleteUser,
   CreateUser,
   Login,
+  GetAllUserApi,
+  CreateUserApi,
+  GetUpdateUserApi,
+  GetDeleteUserApi,
+  GetAllUserApiWithPaginate,
 };
