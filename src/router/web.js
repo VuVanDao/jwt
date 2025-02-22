@@ -8,10 +8,12 @@ import {
   handleCreateUser,
   handleLogin,
   handleGetAllUserApi,
-  handleCreateUserApi,
+  handleGetDetailUserApi,
+  handleCreateAccountApi,
   handleUpdateUserApi,
   handleDeleteUserApi,
 } from "../controller/userController";
+import { getAllGroup } from "../controller/groupController";
 const router = express.Router();
 const initWebRoutes = (app) => {
   router.get("/", handleGetHomePage);
@@ -21,12 +23,16 @@ const initWebRoutes = (app) => {
   router.get("/delete/:id", handleDeleteUser);
   router.get("/delete/:id", handleDeleteUser);
 
-  router.post("/api/v1/create", handleCreateUser);
+  router.post("/api/v1/create-account", handleCreateAccountApi);
   router.post("/api/v1/login", handleLogin);
   router.get("/api/v1/get", handleGetAllUserApi);
-  router.post("/api/v1/post", handleCreateUserApi);
+  router.get("/api/v1/get-detail", handleGetDetailUserApi);
+  router.post("/api/v1/post", handleCreateUser);
   router.put("/api/v1/put", handleUpdateUserApi);
   router.delete("/api/v1/delete/:id", handleDeleteUserApi);
+
+  router.get("/api/v1/get-group", getAllGroup);
+
   return app.use("/", router);
 };
 export default initWebRoutes;

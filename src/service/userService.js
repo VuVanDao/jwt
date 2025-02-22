@@ -1,5 +1,3 @@
-import { where } from "sequelize";
-
 const { User, Group } = require("../models");
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
@@ -58,7 +56,7 @@ const deleteUser = async (id) => {
   });
   user.destroy();
 };
-const CreateUser = async (email, address, phone, username, password) => {
+const CreateAccountApi = async (email, address, phone, username, password) => {
   return new Promise(async (resolve, reject) => {
     try {
       let checkUserExist = await checkEmailExist(email);
@@ -74,18 +72,18 @@ const CreateUser = async (email, address, phone, username, password) => {
         if (user) {
           resolve({
             errCode: 0,
-            errMessage: "Create user complete",
+            errMessage: "Create Account complete",
           });
         } else {
           resolve({
             errCode: 1,
-            errMessage: "Create user is not complete",
+            errMessage: "Create Account is not complete",
           });
         }
       } else {
         resolve({
           errCode: 2,
-          errMessage: " user already exist",
+          errMessage: " Account already exist",
         });
       }
     } catch (error) {
@@ -223,7 +221,15 @@ const GetAllUserApiWithPaginate = async (page, limit) => {
     }
   });
 };
-const CreateUserApi = async (email, address, username, password, phone) => {
+const CreateUser = async (
+  email,
+  address,
+  username,
+  password,
+  phone,
+  gender,
+  group
+) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!email || !password || !username) {
@@ -232,24 +238,34 @@ const CreateUserApi = async (email, address, username, password, phone) => {
           errMessage: "Missing data required",
         });
       } else {
-        let hashPassword = bcrypt.hashSync(password, salt);
-        let userCreated = await User.create({
-          username: username,
-          email: email,
-          password: hashPassword,
-          address: address,
-          phone: phone,
-        });
-        if (userCreated) {
+        let checkUserExist = await checkEmailExist(email);
+        if (checkUserExist) {
           resolve({
-            errCode: 0,
-            errMessage: "Create user complete",
+            errCode: 2,
+            errMessage: " User already exist",
           });
         } else {
-          resolve({
-            errCode: 1,
-            errMessage: "Create user not complete",
+          let hashPassword = bcrypt.hashSync(password, salt);
+          let userCreated = await User.create({
+            username: username,
+            email: email,
+            password: hashPassword,
+            address: address,
+            phone: phone,
+            gender: gender,
+            groupId: group,
           });
+          if (userCreated) {
+            resolve({
+              errCode: 0,
+              errMessage: "Create user complete",
+            });
+          } else {
+            resolve({
+              errCode: 1,
+              errMessage: "Create user not complete",
+            });
+          }
         }
       }
     } catch (error) {
@@ -323,6 +339,36 @@ const GetDeleteUserApi = async (id) => {
     }
   });
 };
+const GetDetailUserApi = async (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let detailUser = await User.findOne({
+        where: {
+          id: id,
+        },
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "password"],
+        },
+      });
+      if (detailUser) {
+        resolve({
+          errCode: 0,
+          errMessage: "found a user",
+          data: detailUser,
+        });
+      } else {
+        resolve({
+          errCode: 1,
+          errMessage: " not found a user",
+          data: {},
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 export {
   AddUser,
   GetAllUser,
@@ -332,8 +378,9 @@ export {
   CreateUser,
   Login,
   GetAllUserApi,
-  CreateUserApi,
+  CreateAccountApi,
   GetUpdateUserApi,
   GetDeleteUserApi,
   GetAllUserApiWithPaginate,
+  GetDetailUserApi,
 };

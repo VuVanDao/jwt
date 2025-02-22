@@ -7,10 +7,12 @@ import {
   CreateUser,
   Login,
   GetAllUserApi,
+  GetDetailUserApi,
   GetAllUserApiWithPaginate,
-  CreateUserApi,
+  CreateAccountApi,
   GetDeleteUserApi,
   GetUpdateUserApi,
+  CreateUserApi,
 } from "../service/userService";
 import { GroupRole, Group, Role } from "../models";
 const handleGetHomePage = async (req, res) => {
@@ -88,10 +90,10 @@ const handleDeleteUser = async (req, res) => {
   await deleteUser(req.params.id);
   res.redirect("/");
 };
-const handleCreateUser = async (req, res) => {
+const handleCreateAccountApi = async (req, res) => {
   try {
     let { email, Address, username, password, phoneNumber } = req.body;
-    let result = await CreateUser(
+    let result = await CreateAccountApi(
       email,
       Address,
       phoneNumber,
@@ -130,10 +132,18 @@ const handleGetAllUserApi = async (req, res) => {
     res.status(500).json({ errMessage: "Error from handleGetAllUser" });
   }
 };
-const handleCreateUserApi = async (req, res) => {
+const handleCreateUser = async (req, res) => {
   try {
-    let { email, address, username, password, phone } = req.body;
-    let result = await CreateUserApi(email, address, username, password, phone);
+    let { email, address, username, password, phone, gender, group } = req.body;
+    let result = await CreateUser(
+      email,
+      address,
+      username,
+      password,
+      phone,
+      gender,
+      group
+    );
     res.status(200).json(result);
   } catch (error) {
     console.log("Error from handleCreateUser", error);
@@ -163,6 +173,16 @@ const handleDeleteUserApi = async (req, res) => {
     res.status(500).json({ errMessage: "Error from handleGetDeleteUser" });
   }
 };
+const handleGetDetailUserApi = async (req, res) => {
+  try {
+    let result = await GetDetailUserApi(req.query.id);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from handleGetDetailUserApi", error);
+    res.status(500).json({ errMessage: "Error from handleGetDetailUserApi" });
+  }
+};
+
 export {
   handleAddUser,
   handleGetHomePage,
@@ -172,7 +192,8 @@ export {
   handleCreateUser,
   handleLogin,
   handleGetAllUserApi,
-  handleCreateUserApi,
+  handleCreateAccountApi,
   handleUpdateUserApi,
   handleDeleteUserApi,
+  handleGetDetailUserApi,
 };
