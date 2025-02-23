@@ -1,4 +1,7 @@
 const { User, Group } = require("../models");
+import { createJWT } from "../middleware/jWTActions";
+import { getGroupWithRole } from "./jWTService";
+require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
 const GetAllUser = async () => {
@@ -68,6 +71,8 @@ const CreateAccountApi = async (email, address, phone, username, password) => {
           password: hashPassword,
           address: address,
           phone: phone,
+          gender: 3,
+          groupId: 4,
         });
         if (user) {
           resolve({
@@ -120,8 +125,20 @@ const checkPassword = async (email, password) => {
       if (checkUserExist && checkUserExist.get({ plain: true }).password) {
         const hashPassword = checkUserExist.get({ plain: true }).password;
         const checkPasswordResult = bcrypt.compareSync(password, hashPassword);
+        const result = await getGroupWithRole(checkUserExist);
+        const user = checkUserExist.get({ plain: true });
+        let payload = {
+          email: user.email,
+          result,
+          expiresIn: process.env.JWT_EXPIRES,
+        };
+        let token = createJWT(payload);
         if (checkPasswordResult) {
-          resolve(true);
+          resolve({
+            check: true,
+            result,
+            access_token: token,
+          });
         } else {
           resolve(false);
         }
@@ -138,7 +155,9 @@ const Login = async (email, password) => {
     try {
       let checkUserExist = await checkEmailExist(email);
       let checkComparePassword = await checkPassword(email, password);
-      if (checkUserExist && checkComparePassword) {
+      console.log("checkComparePassword", checkComparePassword);
+
+      if (checkUserExist && checkComparePassword.check) {
         resolve({
           errCode: 0,
           errMessage: "Login successfully",
