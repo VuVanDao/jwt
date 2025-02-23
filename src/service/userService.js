@@ -205,6 +205,12 @@ const GetAllUserApiWithPaginate = async (page, limit) => {
         attributes: {
           exclude: ["createdAt", "updatedAt", "password"],
         },
+        include: {
+          model: Group,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+        },
       });
       let result = {
         totalRows: count,
@@ -273,10 +279,17 @@ const CreateUser = async (
     }
   });
 };
-const GetUpdateUserApi = async (id, email, address, username, phone) => {
+const GetUpdateUserApi = async (
+  id,
+  address,
+  username,
+  phone,
+  gender,
+  groupId
+) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id || !email || !username) {
+      if (!id) {
         resolve({
           errCode: -1,
           errMessage: "Missing params required",
@@ -293,10 +306,11 @@ const GetUpdateUserApi = async (id, email, address, username, phone) => {
             errMessage: "Not found any user",
           });
         } else {
-          userUpdate.email = email;
-          userUpdate.address = address;
           userUpdate.username = username;
+          userUpdate.address = address;
           userUpdate.phone = phone;
+          userUpdate.groupId = groupId;
+          userUpdate.gender = gender;
           userUpdate.save();
           resolve({
             errCode: 0,

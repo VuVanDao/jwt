@@ -152,12 +152,16 @@ const handleCreateUser = async (req, res) => {
 };
 const handleUpdateUserApi = async (req, res) => {
   try {
-    let id = req.body.id;
-    let username = req.body.username;
-    let email = req.body.email;
-    let phone = req.body.phone;
-    let address = req.body.address;
-    let result = await GetUpdateUserApi(id, email, address, username, phone);
+    const { id, username, address, phone, groupId, gender } = req.body;
+
+    let result = await GetUpdateUserApi(
+      id,
+      address,
+      username,
+      phone,
+      gender,
+      groupId
+    );
     res.status(200).json(result);
   } catch (error) {
     console.log("Error from handleGetUpdateUser", error);
