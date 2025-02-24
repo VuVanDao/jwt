@@ -46,6 +46,25 @@ const handleDeleteUser = async (req, res) => {
   await deleteUser(req.params.id);
   res.redirect("/");
 };
+const handleGetAllUserApi = async (req, res) => {
+  try {
+    console.log("cookie:", req.user);
+
+    if (req.query.limit && req.query.page) {
+      let result = await GetAllUserApiWithPaginate(
+        +req.query.page,
+        +req.query.limit
+      );
+      res.status(200).json(result);
+    } else {
+      let result = await GetAllUserApi();
+      res.status(200).json(result);
+    }
+  } catch (error) {
+    console.log("Error from handleGetAllUser", error);
+    res.status(500).json({ errMessage: "Error from handleGetAllUser" });
+  }
+};
 const handleCreateAccountApi = async (req, res) => {
   try {
     let { email, Address, username, password, phoneNumber } = req.body;
@@ -67,6 +86,7 @@ const handleLogin = async (req, res) => {
     let result = await Login(email, password);
     res.cookie("jwt", result.access_token, {
       httpOnly: true,
+      maxAge: 30 * 1000,
     });
     res.status(200).json(result);
   } catch (error) {
@@ -74,25 +94,7 @@ const handleLogin = async (req, res) => {
     res.status(500).json({ errMessage: "Error from login account" });
   }
 };
-const handleGetAllUserApi = async (req, res) => {
-  try {
-    // console.log("cookie:", req.cookies);
 
-    if (req.query.limit && req.query.page) {
-      let result = await GetAllUserApiWithPaginate(
-        +req.query.page,
-        +req.query.limit
-      );
-      res.status(200).json(result);
-    } else {
-      let result = await GetAllUserApi();
-      res.status(200).json(result);
-    }
-  } catch (error) {
-    console.log("Error from handleGetAllUser", error);
-    res.status(500).json({ errMessage: "Error from handleGetAllUser" });
-  }
-};
 const handleCreateUser = async (req, res) => {
   try {
     let { email, address, username, password, phone, gender, group } = req.body;

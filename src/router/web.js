@@ -13,6 +13,7 @@ import {
   handleUpdateUserApi,
   handleDeleteUserApi,
 } from "../controller/userController";
+import { checkJWT, checkUserPermission } from "../middleware/jWTActions";
 import { getAllGroup } from "../controller/groupController";
 const router = express.Router();
 const initWebRoutes = (app) => {
@@ -25,7 +26,7 @@ const initWebRoutes = (app) => {
 
   router.post("/api/v1/create-account", handleCreateAccountApi);
   router.post("/api/v1/login", handleLogin);
-  router.get("/api/v1/get", handleGetAllUserApi);
+  router.get("/api/v1/get", checkJWT, checkUserPermission, handleGetAllUserApi);
   router.get("/api/v1/get-detail", handleGetDetailUserApi);
   router.post("/api/v1/post", handleCreateUser);
   router.put("/api/v1/put", handleUpdateUserApi);

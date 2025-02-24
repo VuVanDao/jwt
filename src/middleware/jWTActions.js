@@ -23,4 +23,58 @@ const verifyToken = (token) => {
   }
   return data;
 };
-export { createJWT, verifyToken };
+const checkJWT = (req, res, next) => {
+  let cookie = req.cookies;
+  if (cookie && cookie.jwt) {
+    // console.log("cookie", cookie.jwt);
+    let token = cookie.jwt;
+    let decoded = verifyToken(token);
+    if (decoded) {
+      req.user = decoded;
+      next();
+    } else {
+      res.status(401).json({
+        errCode: -1,
+        errMessage: "not authenticated a user",
+        data: {},
+      });
+    }
+  } else {
+    res.status(401).json({
+      errCode: -1,
+      errMessage: "not authenticated a user",
+      data: {},
+    });
+  }
+};
+const checkUserPermission = (req, res, next) => {
+  if (req.user) {
+    let email = req.user.email;
+    let roles = req.user.result;
+    let currentURL = req.path;
+    if (!roles || roles.length === 0) {
+      res.status(403).json({
+        errCode: -1,
+        errMessage: "You don't have permission",
+        data: {},
+      });
+    }
+    let canAccess = roles.some((item) => item.Roles.url === currentURL);
+    if (canAccess) {
+      next();
+    } else {
+      res.status(403).json({
+        errCode: -1,
+        errMessage: "You don't have permission",
+        data: {},
+      });
+    }
+  } else {
+    res.status(401).json({
+      errCode: -1,
+      errMessage: "not authenticated a user",
+      data: {},
+    });
+  }
+};
+export { createJWT, verifyToken, checkJWT, checkUserPermission };
