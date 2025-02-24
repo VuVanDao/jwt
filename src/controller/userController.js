@@ -17,52 +17,8 @@ import {
 import { GroupRole, Group, Role } from "../models";
 const handleGetHomePage = async (req, res) => {
   let result = await GetAllUser();
-  // console.log(">>", result);
-  // let result2 = await GroupRole.findOne({
-  //   include: [
-  //     {
-  //       model: Group,
-  //       attributes: {
-  //         exclude: ["createdAt", "updatedAt"],
-  //       },
-  //     },
-  //     {
-  //       model: Role,
-  //       attributes: {
-  //         exclude: ["createdAt", "updatedAt"],
-  //       },
-  //     },
-  //   ],
-  //   raw: true,
-  // });
-  // let result2 = await Group.findAll({
-  //   include: {
-  //     model: Role,
-  //     attributes: {
-  //       exclude: ["createdAt", "updatedAt"],
-  //     },
-  //   },
-  //   attributes: {
-  //     exclude: ["createdAt", "updatedAt"],
-  //   },
-  //   raw: true,
-  //   nest: true,
-  // });
-  // console.log("group", result2);
-  // let result3 = await Role.findAll({
-  //   include: {
-  //     model: Group,
-  //     attributes: {
-  //       exclude: ["createdAt", "updatedAt"],
-  //     },
-  //   },
-  //   attributes: {
-  //     exclude: ["createdAt", "updatedAt"],
-  //   },
-  //   raw: true,
-  //   nest: true,
-  // });
-  // console.log("role", result3);
+  console.log("cookie", req.cookies);
+  console.log("cookie signed", req.signedCookies);
   if (result && result.length > 0) {
     res.render("user.ejs", { result });
   } else {
@@ -109,6 +65,9 @@ const handleLogin = async (req, res) => {
   try {
     let { email, password } = req.body;
     let result = await Login(email, password);
+    res.cookie("jwt", result.access_token, {
+      httpOnly: true,
+    });
     res.status(200).json(result);
   } catch (error) {
     console.log("Error from login account", error);
@@ -117,6 +76,8 @@ const handleLogin = async (req, res) => {
 };
 const handleGetAllUserApi = async (req, res) => {
   try {
+    // console.log("cookie:", req.cookies);
+
     if (req.query.limit && req.query.page) {
       let result = await GetAllUserApiWithPaginate(
         +req.query.page,

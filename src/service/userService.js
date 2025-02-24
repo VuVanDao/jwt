@@ -155,12 +155,15 @@ const Login = async (email, password) => {
     try {
       let checkUserExist = await checkEmailExist(email);
       let checkComparePassword = await checkPassword(email, password);
-      console.log("checkComparePassword", checkComparePassword);
-
+      // console.log("checkComparePassword", checkComparePassword);
+      // res.cookie("jwt", checkComparePassword.access_token, {
+      //   httpOnly: true,
+      // });
       if (checkUserExist && checkComparePassword.check) {
         resolve({
           errCode: 0,
           errMessage: "Login successfully",
+          access_token: checkComparePassword.access_token,
         });
       } else {
         if (!checkUserExist) {

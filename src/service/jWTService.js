@@ -19,7 +19,7 @@ const getGroupWithRole = async (user) => {
       raw: true,
       nest: true,
     });
-    console.log("result", result);
+    // console.log("result", result);
     if (result) {
       return result;
     } else {
