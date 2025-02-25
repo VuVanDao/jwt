@@ -12,6 +12,7 @@ const createJWT = (payload) => {
   }
   return token;
 };
+const nonSecurePaths = ["/api/v1/create-account", "/api/v1/login"];
 const verifyToken = (token) => {
   let key = process.env.JWT_SECRET;
   let data = null;
@@ -24,6 +25,7 @@ const verifyToken = (token) => {
   return data;
 };
 const checkJWT = (req, res, next) => {
+  if (nonSecurePaths.includes(req.path)) return next();
   let cookie = req.cookies;
   if (cookie && cookie.jwt) {
     // console.log("cookie", cookie.jwt);
@@ -48,6 +50,7 @@ const checkJWT = (req, res, next) => {
   }
 };
 const checkUserPermission = (req, res, next) => {
+  if (nonSecurePaths.includes(req.path)) return next();
   if (req.user) {
     let email = req.user.email;
     let roles = req.user.result;
@@ -59,6 +62,7 @@ const checkUserPermission = (req, res, next) => {
         data: {},
       });
     }
+
     let canAccess = roles.some((item) => item.Roles.url === currentURL);
     if (canAccess) {
       next();

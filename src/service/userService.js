@@ -138,6 +138,8 @@ const checkPassword = async (email, password) => {
             check: true,
             result,
             access_token: token,
+            username: user.username,
+            account: { email: user.email, roles: result },
           });
         } else {
           resolve(false);
@@ -156,14 +158,13 @@ const Login = async (email, password) => {
       let checkUserExist = await checkEmailExist(email);
       let checkComparePassword = await checkPassword(email, password);
       // console.log("checkComparePassword", checkComparePassword);
-      // res.cookie("jwt", checkComparePassword.access_token, {
-      //   httpOnly: true,
-      // });
       if (checkUserExist && checkComparePassword.check) {
         resolve({
           errCode: 0,
           errMessage: "Login successfully",
           access_token: checkComparePassword.access_token,
+          account: checkComparePassword.account,
+          username: checkComparePassword.username,
         });
       } else {
         if (!checkUserExist) {

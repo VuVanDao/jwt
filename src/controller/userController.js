@@ -48,7 +48,7 @@ const handleDeleteUser = async (req, res) => {
 };
 const handleGetAllUserApi = async (req, res) => {
   try {
-    console.log("cookie:", req.user);
+    // console.log("cookie:", req.user);
 
     if (req.query.limit && req.query.page) {
       let result = await GetAllUserApiWithPaginate(
@@ -84,10 +84,12 @@ const handleLogin = async (req, res) => {
   try {
     let { email, password } = req.body;
     let result = await Login(email, password);
-    res.cookie("jwt", result.access_token, {
-      httpOnly: true,
-      maxAge: 30 * 1000,
-    });
+    if (result.errCode === 0 && result.access_token) {
+      res.cookie("jwt", result.access_token, {
+        httpOnly: true,
+        maxAge: 30 * 1000,
+      });
+    }
     res.status(200).json(result);
   } catch (error) {
     console.log("Error from login account", error);
