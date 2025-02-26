@@ -15,6 +15,7 @@ import {
   CreateUserApi,
 } from "../service/userService";
 import { GroupRole, Group, Role } from "../models";
+import { emit } from "nodemon";
 const handleGetHomePage = async (req, res) => {
   let result = await GetAllUser();
   console.log("cookie", req.cookies);
@@ -151,7 +152,24 @@ const handleGetDetailUserApi = async (req, res) => {
     res.status(500).json({ errMessage: "Error from handleGetDetailUserApi" });
   }
 };
-
+const getUserAccount = async (req, res) => {
+  try {
+    // console.log(">>>", req.user);
+    res.status(200).json({
+      errCode: 0,
+      errMessage: "ok",
+      data: {
+        access_token: req.token,
+        roles: req.user.result,
+        email: req.user.email,
+        username: req.user.username,
+      },
+    });
+  } catch (error) {
+    console.log("Error from getUserAccount", error);
+    res.status(500).json({ errMessage: "Error from getUserAccount" });
+  }
+};
 export {
   handleAddUser,
   handleGetHomePage,
@@ -165,4 +183,5 @@ export {
   handleUpdateUserApi,
   handleDeleteUserApi,
   handleGetDetailUserApi,
+  getUserAccount,
 };

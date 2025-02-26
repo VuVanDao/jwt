@@ -130,7 +130,7 @@ const checkPassword = async (email, password) => {
         let payload = {
           email: user.email,
           result,
-          expiresIn: process.env.JWT_EXPIRES,
+          username: user.username,
         };
         let token = createJWT(payload);
         if (checkPasswordResult) {

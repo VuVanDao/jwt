@@ -8,9 +8,14 @@ const configCors = (app) => {
     );
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "X-Requested-With,content-type"
+      "X-Requested-With,content-type,Authorization"
     );
+
     res.setHeader("Access-Control-Allow-Credentials", true);
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(200);
+    }
+    // console.log(">", req.method);
     next();
   });
 };

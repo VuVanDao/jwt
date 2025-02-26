@@ -12,6 +12,7 @@ import {
   handleCreateAccountApi,
   handleUpdateUserApi,
   handleDeleteUserApi,
+  getUserAccount,
 } from "../controller/userController";
 import { checkJWT, checkUserPermission } from "../middleware/jWTActions";
 import { getAllGroup } from "../controller/groupController";
@@ -28,6 +29,7 @@ const initWebRoutes = (app) => {
   router.all("*", checkJWT, checkUserPermission);
   router.post("/api/v1/create-account", handleCreateAccountApi);
   router.post("/api/v1/login", handleLogin); //tao token o day
+  router.get("/api/v1/account", getUserAccount);
   router.get("/api/v1/get", handleGetAllUserApi);
   router.get("/api/v1/get-detail", handleGetDetailUserApi);
   router.post("/api/v1/post", handleCreateUser);
