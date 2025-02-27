@@ -22,7 +22,7 @@ const verifyToken = (token) => {
     let decoded = jwt.verify(token, key);
     data = decoded;
   } catch (error) {
-    console.log("error from JWTActions verifyToken", err);
+    console.log("error from JWTActions verifyToken", error);
   }
   return data;
 };
