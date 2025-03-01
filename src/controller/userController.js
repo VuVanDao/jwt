@@ -13,6 +13,8 @@ import {
   GetDeleteUserApi,
   GetUpdateUserApi,
   handleSaveRoles,
+  handleGetRoles,
+  handleDeleteRoles,
 } from "../service/userService";
 
 const handleGetHomePage = async (req, res) => {
@@ -190,6 +192,24 @@ const saveRoles = async (req, res) => {
     res.status(500).json({ errMessage: "Error from saveRoles" });
   }
 };
+const getRoles = async (req, res) => {
+  try {
+    const result = await handleGetRoles();
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from GetRoles", error);
+    res.status(500).json({ errMessage: "Error from GetRoles" });
+  }
+};
+const deleteRoles = async (req, res) => {
+  try {
+    const result = await handleDeleteRoles(req.query.id);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from DeleteRoles", error);
+    res.status(500).json({ errMessage: "Error from DeleteRoles" });
+  }
+};
 export {
   handleAddUser,
   handleGetHomePage,
@@ -206,4 +226,6 @@ export {
   handleGetDetailUserApi,
   getUserAccount,
   saveRoles,
+  getRoles,
+  deleteRoles,
 };

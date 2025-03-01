@@ -2,6 +2,7 @@ const { User, Group, Role } = require("../models");
 import { raw } from "body-parser";
 import { createJWT } from "../middleware/jWTActions";
 import { getGroupWithRole } from "./jWTService";
+import { where } from "sequelize";
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
@@ -409,9 +410,32 @@ const GetDetailUserApi = async (id) => {
 const handleSaveRoles = async (roles) => {
   return new Promise(async (resolve, reject) => {
     try {
+      let result = await Role.bulkCreate(roles);
+      if (result) {
+        resolve({
+          errCode: 0,
+          errMessage: "create roles complete",
+        });
+      } else {
+        resolve({
+          errCode: 1,
+          errMessage: "create roles not complete",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const handleGetRoles = async (roles) => {
+  return new Promise(async (resolve, reject) => {
+    try {
       let findRoles = await Role.findAll({
         raw: true,
         nest: true,
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
       });
       // Array.prototype.equals = function (array) {
       //   if (!Array.isArray(array)) {
@@ -437,16 +461,42 @@ const handleSaveRoles = async (roles) => {
       // };
       // let check = findRoles.equals(roles);
       // console.log("><><", check);
-      let result = await Role.bulkCreate(roles);
-      if (result) {
+      if (findRoles && findRoles.length > 0) {
         resolve({
           errCode: 0,
           errMessage: "create roles complete",
+          data: findRoles,
         });
       } else {
         resolve({
           errCode: 1,
           errMessage: "create roles not complete",
+          data: [],
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const handleDeleteRoles = async (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let findRoles = await Role.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (findRoles) {
+        findRoles.destroy();
+        resolve({
+          errCode: 0,
+          errMessage: "delete roles complete",
+        });
+      } else {
+        resolve({
+          errCode: 1,
+          errMessage: "delete roles not complete",
         });
       }
     } catch (error) {
@@ -469,4 +519,6 @@ export {
   GetAllUserApiWithPaginate,
   GetDetailUserApi,
   handleSaveRoles,
+  handleGetRoles,
+  handleDeleteRoles,
 };

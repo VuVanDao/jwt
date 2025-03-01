@@ -15,6 +15,8 @@ import {
   handleDeleteUserApi,
   getUserAccount,
   saveRoles,
+  getRoles,
+  deleteRoles,
 } from "../controller/userController";
 import { checkJWT, checkUserPermission } from "../middleware/jWTActions";
 import { getAllGroup } from "../controller/groupController";
@@ -40,7 +42,10 @@ const initWebRoutes = (app) => {
   router.delete("/api/v1/delete/:id", handleDeleteUserApi);
 
   router.get("/api/v1/get-group", getAllGroup);
+
+  router.get("/api/v1/get-roles", getRoles);
   router.post("/api/v1/save-roles", saveRoles);
+  router.post("/api/v1/delete-roles", deleteRoles);
 
   return app.use("/", router);
 };
