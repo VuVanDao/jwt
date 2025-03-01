@@ -15,6 +15,7 @@ import {
   handleSaveRoles,
   handleGetRoles,
   handleDeleteRoles,
+  handleGetRolesByGroup,
 } from "../service/userService";
 
 const handleGetHomePage = async (req, res) => {
@@ -210,6 +211,15 @@ const deleteRoles = async (req, res) => {
     res.status(500).json({ errMessage: "Error from DeleteRoles" });
   }
 };
+const getRolesByGroup = async (req, res) => {
+  try {
+    const result = await handleGetRolesByGroup(req.query.id);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from getRolesByGroup", error);
+    res.status(500).json({ errMessage: "Error from getRolesByGroup" });
+  }
+};
 export {
   handleAddUser,
   handleGetHomePage,
@@ -228,4 +238,5 @@ export {
   saveRoles,
   getRoles,
   deleteRoles,
+  getRolesByGroup,
 };

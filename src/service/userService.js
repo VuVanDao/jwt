@@ -1,8 +1,7 @@
 const { User, Group, Role } = require("../models");
-import { raw } from "body-parser";
 import { createJWT } from "../middleware/jWTActions";
 import { getGroupWithRole } from "./jWTService";
-import { where } from "sequelize";
+
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const salt = bcrypt.genSaltSync(10);
@@ -504,6 +503,45 @@ const handleDeleteRoles = async (id) => {
     }
   });
 };
+const handleGetRolesByGroup = (groupId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let result = await Group.findAll({
+        where: {
+          id: groupId,
+        },
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "GroupRole"],
+        },
+        include: {
+          model: Role,
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "GroupRole"],
+          },
+          through: { attributes: [] },
+        },
+        raw: true,
+        nest: true,
+      });
+      console.log(">>", result);
+      if (result && result.length > 0) {
+        resolve({
+          errCode: 0,
+          errMessage: "ok",
+          data: result,
+        });
+      } else {
+        resolve({
+          errCode: 1,
+          errMessage: "!ok",
+          data: [],
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 export {
   AddUser,
   GetAllUser,
@@ -521,4 +559,5 @@ export {
   handleSaveRoles,
   handleGetRoles,
   handleDeleteRoles,
+  handleGetRolesByGroup,
 };
