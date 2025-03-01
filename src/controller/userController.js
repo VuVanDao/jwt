@@ -12,10 +12,9 @@ import {
   CreateAccountApi,
   GetDeleteUserApi,
   GetUpdateUserApi,
-  CreateUserApi,
+  handleSaveRoles,
 } from "../service/userService";
-import { GroupRole, Group, Role } from "../models";
-import { emit } from "nodemon";
+
 const handleGetHomePage = async (req, res) => {
   let result = await GetAllUser();
   console.log("cookie", req.cookies);
@@ -97,6 +96,18 @@ const handleLogin = async (req, res) => {
     res.status(500).json({ errMessage: "Error from login account" });
   }
 };
+const handleLogout = async (req, res) => {
+  try {
+    res.clearCookie("jwt");
+    res.status(200).json({
+      errCode: 0,
+      errMessage: "Logout complete",
+    });
+  } catch (error) {
+    console.log("Error from login account", error);
+    res.status(500).json({ errMessage: "Error from login account" });
+  }
+};
 
 const handleCreateUser = async (req, res) => {
   try {
@@ -170,6 +181,15 @@ const getUserAccount = async (req, res) => {
     res.status(500).json({ errMessage: "Error from getUserAccount" });
   }
 };
+const saveRoles = async (req, res) => {
+  try {
+    const result = await handleSaveRoles(req.body);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from saveRoles", error);
+    res.status(500).json({ errMessage: "Error from saveRoles" });
+  }
+};
 export {
   handleAddUser,
   handleGetHomePage,
@@ -178,10 +198,12 @@ export {
   handleDeleteUser,
   handleCreateUser,
   handleLogin,
+  handleLogout,
   handleGetAllUserApi,
   handleCreateAccountApi,
   handleUpdateUserApi,
   handleDeleteUserApi,
   handleGetDetailUserApi,
   getUserAccount,
+  saveRoles,
 };

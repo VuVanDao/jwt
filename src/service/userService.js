@@ -1,4 +1,5 @@
-const { User, Group } = require("../models");
+const { User, Group, Role } = require("../models");
+import { raw } from "body-parser";
 import { createJWT } from "../middleware/jWTActions";
 import { getGroupWithRole } from "./jWTService";
 require("dotenv").config();
@@ -405,7 +406,54 @@ const GetDetailUserApi = async (id) => {
     }
   });
 };
-
+const handleSaveRoles = async (roles) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let findRoles = await Role.findAll({
+        raw: true,
+        nest: true,
+      });
+      // Array.prototype.equals = function (array) {
+      //   if (!Array.isArray(array)) {
+      //     throw new Error("Tham số truyền vào phải là một mảng.");
+      //   }
+      //   const differences = {
+      //     toAdd: [],
+      //     toRemove: [],
+      //   };
+      //   differences.toAdd = array.filter(
+      //     (item2) =>
+      //       !this.some(
+      //         (item1) => JSON.stringify(item1) === JSON.stringify(item2)
+      //       )
+      //   );
+      //   differences.toRemove = this.filter(
+      //     (item1) =>
+      //       !array.some(
+      //         (item2) => JSON.stringify(item1) === JSON.stringify(item2)
+      //       )
+      //   );
+      //   return differences;
+      // };
+      // let check = findRoles.equals(roles);
+      // console.log("><><", check);
+      let result = await Role.bulkCreate(roles);
+      if (result) {
+        resolve({
+          errCode: 0,
+          errMessage: "create roles complete",
+        });
+      } else {
+        resolve({
+          errCode: 1,
+          errMessage: "create roles not complete",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 export {
   AddUser,
   GetAllUser,
@@ -420,4 +468,5 @@ export {
   GetDeleteUserApi,
   GetAllUserApiWithPaginate,
   GetDetailUserApi,
+  handleSaveRoles,
 };

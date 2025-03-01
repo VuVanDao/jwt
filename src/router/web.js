@@ -7,12 +7,14 @@ import {
   handleDeleteUser,
   handleCreateUser,
   handleLogin,
+  handleLogout,
   handleGetAllUserApi,
   handleGetDetailUserApi,
   handleCreateAccountApi,
   handleUpdateUserApi,
   handleDeleteUserApi,
   getUserAccount,
+  saveRoles,
 } from "../controller/userController";
 import { checkJWT, checkUserPermission } from "../middleware/jWTActions";
 import { getAllGroup } from "../controller/groupController";
@@ -26,9 +28,10 @@ const initWebRoutes = (app) => {
   router.get("/delete/:id", handleDeleteUser);
   router.get("/delete/:id", handleDeleteUser);
 
-  router.all("*", checkJWT, checkUserPermission);
+  router.all("*", checkJWT /* tao req.user o day */, checkUserPermission);
   router.post("/api/v1/create-account", handleCreateAccountApi);
   router.post("/api/v1/login", handleLogin); //tao token o day
+  router.get("/api/v1/logout", handleLogout);
   router.get("/api/v1/account", getUserAccount);
   router.get("/api/v1/get", handleGetAllUserApi);
   router.get("/api/v1/get-detail", handleGetDetailUserApi);
@@ -37,6 +40,7 @@ const initWebRoutes = (app) => {
   router.delete("/api/v1/delete/:id", handleDeleteUserApi);
 
   router.get("/api/v1/get-group", getAllGroup);
+  router.post("/api/v1/save-roles", saveRoles);
 
   return app.use("/", router);
 };

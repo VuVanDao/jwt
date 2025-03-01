@@ -14,13 +14,19 @@ const createJWT = (payload) => {
   }
   return token;
 };
-const nonSecurePaths = ["/api/v1/create-account", "/api/v1/login", "/"];
+const nonSecurePaths = [
+  "/api/v1/create-account",
+  "/api/v1/login",
+  "/",
+  "/api/v1/logout",
+];
 const verifyToken = (token) => {
   let key = process.env.JWT_SECRET;
   let data = null;
   try {
     let decoded = jwt.verify(token, key);
     data = decoded;
+    // console.log(">>>", data);
   } catch (error) {
     console.log("error from JWTActions verifyToken", error);
   }
@@ -40,6 +46,7 @@ const extractToken = (req) => {
 const checkJWT = (req, res, next) => {
   if (nonSecurePaths.includes(req.path)) return next();
   let cookie = req.cookies;
+  // console.log(">>", req.cookies);
   const tokenFromHeader = extractToken(req);
   if ((cookie && cookie.jwt) || tokenFromHeader) {
     let token = cookie && cookie.jwt ? cookie.jwt : tokenFromHeader;
@@ -78,6 +85,8 @@ const checkUserPermission = (req, res, next) => {
         data: {},
       });
     }
+    // console.log("currentURL", currentURL);
+    // console.log("roles", roles);
 
     let canAccess = roles.some((item) => item.Roles.url === currentURL);
     if (canAccess) {
