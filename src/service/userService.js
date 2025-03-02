@@ -1,4 +1,5 @@
-const { User, Group, Role } = require("../models");
+const { User, Group, Role, GroupRole } = require("../models");
+import { where } from "sequelize";
 import { createJWT } from "../middleware/jWTActions";
 import { getGroupWithRole } from "./jWTService";
 
@@ -523,7 +524,7 @@ const handleGetRolesByGroup = (groupId) => {
         raw: true,
         nest: true,
       });
-      console.log(">>", result);
+      // console.log(">>", result);
       if (result && result.length > 0) {
         resolve({
           errCode: 0,
@@ -535,6 +536,33 @@ const handleGetRolesByGroup = (groupId) => {
           errCode: 1,
           errMessage: "!ok",
           data: [],
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const handleAssignRoles = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let deleteRolesByGroupId = await GroupRole.destroy({
+        where: {
+          groupId: +data.groupId,
+        },
+      });
+      console.log("", deleteRolesByGroupId);
+
+      let result = await GroupRole.bulkCreate(data.roleId);
+      if (result) {
+        resolve({
+          errCode: 0,
+          errMessage: "assign roles complete",
+        });
+      } else {
+        resolve({
+          errCode: 1,
+          errMessage: "assign roles not complete",
         });
       }
     } catch (error) {
@@ -560,4 +588,5 @@ export {
   handleGetRoles,
   handleDeleteRoles,
   handleGetRolesByGroup,
+  handleAssignRoles,
 };

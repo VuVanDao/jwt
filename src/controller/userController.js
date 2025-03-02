@@ -16,6 +16,7 @@ import {
   handleGetRoles,
   handleDeleteRoles,
   handleGetRolesByGroup,
+  handleAssignRoles,
 } from "../service/userService";
 
 const handleGetHomePage = async (req, res) => {
@@ -220,6 +221,15 @@ const getRolesByGroup = async (req, res) => {
     res.status(500).json({ errMessage: "Error from getRolesByGroup" });
   }
 };
+const assignRoles = async (req, res) => {
+  try {
+    const result = await handleAssignRoles(req.body);
+    res.status(200).json(result);
+  } catch (error) {
+    console.log("Error from assignRoles", error);
+    res.status(500).json({ errMessage: "Error from assignRoles" });
+  }
+};
 export {
   handleAddUser,
   handleGetHomePage,
@@ -239,4 +249,5 @@ export {
   getRoles,
   deleteRoles,
   getRolesByGroup,
+  assignRoles,
 };

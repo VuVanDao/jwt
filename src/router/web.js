@@ -18,6 +18,7 @@ import {
   getRoles,
   deleteRoles,
   getRolesByGroup,
+  assignRoles,
 } from "../controller/userController";
 import { checkJWT, checkUserPermission } from "../middleware/jWTActions";
 import { getAllGroup } from "../controller/groupController";
@@ -48,6 +49,7 @@ const initWebRoutes = (app) => {
   router.get("/api/v1/get-roles-by-group", getRolesByGroup);
   router.post("/api/v1/save-roles", saveRoles);
   router.post("/api/v1/delete-roles", deleteRoles);
+  router.post("/api/v1/assign-roles", assignRoles);
 
   return app.use("/", router);
 };

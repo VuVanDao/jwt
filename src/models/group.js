@@ -13,7 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "groupId",
         // as: "groupData",
       });
-      Group.belongsToMany(models.Role, { through: "GroupRole" /* options */ });
+      Group.belongsToMany(models.Role, {
+        through: "GroupRole",
+        foreignKey: "groupId",
+      });
     }
   }
   Group.init(
